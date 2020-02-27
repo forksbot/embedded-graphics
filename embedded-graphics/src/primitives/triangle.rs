@@ -194,12 +194,19 @@ where
     fn into_iter(self) -> Self::IntoIter {
         let (v1, v2, v3) = sort_yx(self.primitive.p1, self.primitive.p2, self.primitive.p3);
 
+        // dbg!(v1);
+        // dbg!(v2);
+        // dbg!(v3);
+
         let mut line_a = LineIterator::new(&Line::new(v1, v2));
         let mut line_b = LineIterator::new(&Line::new(v1, v3));
         let mut line_c = LineIterator::new(&Line::new(v2, v3));
 
         let next_ac = line_a.next().or_else(|| line_c.next());
         let next_b = line_b.next();
+
+        // dbg!(next_ac);
+        // dbg!(next_b);
 
         StyledTriangleIterator {
             line_a,
@@ -246,11 +253,18 @@ impl<C> StyledTriangleIterator<C>
 where
     C: PixelColor,
 {
+    fn border_width(&self) -> i32 {
+        self.style
+            .stroke_color
+            .map(|_| self.style.stroke_width_i32())
+            .unwrap_or(0)
+    }
+
     fn update_ac(&mut self) -> IterState {
         if let Some(ac) = self.next_ac {
             self.cur_ac = Some(ac);
             self.next_ac = self.line_a.next().or_else(|| self.line_c.next());
-            self.x = 0;
+            self.x = 1;
             IterState::Border(ac)
         } else {
             IterState::None
@@ -261,7 +275,7 @@ where
         if let Some(b) = self.next_b {
             self.cur_b = Some(b);
             self.next_b = self.line_b.next();
-            self.x = 0;
+            self.x = 1;
             IterState::Border(b)
         } else {
             IterState::None
@@ -315,14 +329,19 @@ where
             match self.points() {
                 IterState::Border(point) => {
                     // Draw edges of the triangle
+
+                    // if let Some(color) = self.style.stroke_color.or_else(|| self.style.fill_color) {
+                    //     if point.x >= 0 && point.y >= 0 {
+                    //         return Some(Pixel(point, color));
+                    //     }
+                    // }
+
                     if point.x >= 0 && point.y >= 0 {
                         if self.style.stroke_width > 0 {
                             if let Some(color) = self.style.stroke_color {
-                                self.x += 1;
                                 return Some(Pixel(point, color));
                             }
                         } else if let Some(color) = self.style.fill_color {
-                            self.x += 1;
                             return Some(Pixel(point, color));
                         }
                     }

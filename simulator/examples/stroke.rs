@@ -12,7 +12,7 @@ fn main() -> Result<(), core::convert::Infallible> {
     let mut display: SimulatorDisplay<BinaryColor> = SimulatorDisplay::new(Size::new(320, 256));
 
     let thin_stroke = PrimitiveStyle::with_stroke(BinaryColor::On, 1);
-    let medium_stroke = PrimitiveStyle::with_stroke(BinaryColor::On, 3);
+    let medium_stroke = PrimitiveStyle::with_stroke(BinaryColor::On, 0);
     let thick_stroke = PrimitiveStyle::with_stroke(BinaryColor::On, 10);
 
     let triangle = Triangle::new(Point::new(0, 64), Point::new(64, 0), Point::new(64, 64));
